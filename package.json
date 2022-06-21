@@ -19,7 +19,9 @@
   },
   "main": "./app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "run": "node app.js --acsUrl http://localhost:4200/api/login/callback --audience http://localhost:4200/api/login/metadata --cert /Users/danielruiz/dev/assets/DAD3/saml-idp/idp-public-cert.pem --key /Users/danielruiz/dev/assets/DAD3/saml-idp/idp-private-key.pem --issuer urn:kaitec:idp --encryptAssertion true --encryptionCert /Users/danielruiz/dev/assets/DAD3/saml-idp/idp-public-cert.pem --encryptionPublicKey /Users/danielruiz/dev/assets/DAD3/saml-idp/pub.key",
+    "cert": "node app.js --acsUrl http://localhost:8181/api/login/callback --audience http://localhost:8181/api/login/metadata --cert /home/cert/idp-public-cert.pem --key /home/cert/idp-private-key.pem --issuer urn:kaitec:idp --encryptAssertion true --encryptionCert /home/cert/idp-public-cert.pem --encryptionPublicKey /home/cert/pub.key"
   },
   "bin": "./bin/run.js",
   "engines": {
@@ -33,6 +35,7 @@
     "express-session": "^1.16.1",
     "extend": "^3.0.2",
     "hbs": "^4.0.4",
+    "mongodb": "^3.3.2",
     "morgan": "^1.9.1",
     "samlp": "github:mcguinness/node-samlp",
     "xml-formatter": "^1.1.0",

@@ -3,24 +3,24 @@
  * Module dependencies.
  */
 
-const chalk               = require('chalk'),
-      express             = require('express'),
-      os                  = require('os'),
-      fs                  = require('fs'),
-      http                = require('http'),
-      https               = require('https'),
-      path                = require('path'),
-      extend              = require('extend'),
-      hbs                 = require('hbs'),
-      logger              = require('morgan'),
-      bodyParser          = require('body-parser'),
-      session             = require('express-session'),
-      yargs               = require('yargs/yargs'),
-      xmlFormat           = require('xml-formatter'),
-      samlp               = require('samlp'),
-      Parser              = require('xmldom').DOMParser,
-      SessionParticipants = require('samlp/lib/sessionParticipants'),
-      SimpleProfileMapper = require('./lib/simpleProfileMapper.js');
+const chalk = require('chalk'),
+  express = require('express'),
+  os = require('os'),
+  fs = require('fs'),
+  http = require('http'),
+  https = require('https'),
+  path = require('path'),
+  extend = require('extend'),
+  hbs = require('hbs'),
+  logger = require('morgan'),
+  bodyParser = require('body-parser'),
+  session = require('express-session'),
+  yargs = require('yargs/yargs'),
+  xmlFormat = require('xml-formatter'),
+  samlp = require('samlp'),
+  Parser = require('xmldom').DOMParser,
+  SessionParticipants = require('samlp/lib/sessionParticipants'),
+  SimpleProfileMapper = require('./lib/simpleProfileMapper.js');
 
 /**
  * Globals
@@ -108,7 +108,7 @@ function getHashCode(str) {
   if (str.length == 0) return hash;
   for (i = 0; i < str.length; i++) {
     char = str.charCodeAt(i);
-    hash = ((hash<<5)-hash)+char;
+    hash = ((hash << 5) - hash) + char;
     hash = hash & hash; // Convert to 32bit integer
   }
   return hash;
@@ -129,11 +129,10 @@ function formatOptionValue(key, value) {
     return value;
   }
   if (CERT_OPTIONS.includes(key)) {
-    return chalk`${
-      value.toString()
+    return chalk`${value.toString()
         .replace(/-----.+?-----|\n/g, '')
         .substring(0, 80)
-    }{white …}`;
+      }{white …}`;
   }
   if (!value && value !== false) {
     return UNDEFINED_VALUE;
@@ -147,7 +146,7 @@ function formatOptionValue(key, value) {
 
 function prettyPrintXml(xml, indent) {
   // This works well, because we format the xml before applying the replacements
-  const prettyXml = xmlFormat(xml, {indentation: '  '})
+  const prettyXml = xmlFormat(xml, { indentation: '  ' })
     // Matches `<{prefix}:{name} .*?>`
     .replace(/<(\/)?((?:[\w]+)(?::))?([\w]+)(.*?)>/g, chalk`<{green $1$2{bold $3}}$4>`)
     // Matches ` {attribute}="{value}"
@@ -172,9 +171,9 @@ function processArgs(args, options) {
   }
   return baseArgv
     .usage('\nSimple IdP for SAML 2.0 WebSSO & SLO Profile\n\n' +
-        'Launches an IdP web server that mints SAML assertions or logout responses for a Service Provider (SP)\n\n' +
-        'Usage:\n\t$0 --acsUrl {url} --audience {uri}')
-    .alias({h: 'help'})
+      'Launches an IdP web server that mints SAML assertions or logout responses for a Service Provider (SP)\n\n' +
+      'Usage:\n\t$0 --acsUrl {url} --audience {uri}')
+    .alias({ h: 'help' })
     .options({
       host: {
         description: 'IdP Web Server Listener Host',
@@ -254,7 +253,7 @@ function processArgs(args, options) {
       },
       encryptionPublicKey: {
         description: 'SP RSA Public Key (pem) for Assertion Encryption ' +
-        '(e.g. openssl x509 -pubkey -noout -in sp-cert.pem)',
+          '(e.g. openssl x509 -pubkey -noout -in sp-cert.pem)',
         required: false,
         string: true,
         alias: 'encKey',
@@ -318,7 +317,7 @@ function processArgs(args, options) {
       }
     })
     .example('$0 --acsUrl http://acme.okta.com/auth/saml20/exampleidp --audience https://www.okta.com/saml2/service-provider/spf5aFRRXFGIMAYXQPNV', '')
-    .check(function(argv, aliases) {
+    .check(function (argv, aliases) {
       if (argv.encryptAssertion) {
         if (argv.encryptionPublicKey === undefined) {
           return 'encryptionPublicKey argument is also required for assertion encryption';
@@ -329,7 +328,7 @@ function processArgs(args, options) {
       }
       return true;
     })
-    .check(function(argv, aliases) {
+    .check(function (argv, aliases) {
       if (argv.config) {
         return true;
       }
@@ -396,75 +395,75 @@ function _runServer(argv) {
    */
 
   const idpOptions = {
-    issuer:                 argv.issuer,
-    serviceProviderId:      argv.serviceProviderId || argv.audience,
-    cert:                   argv.cert,
-    key:                    argv.key,
-    audience:               argv.audience,
-    recipient:              argv.acsUrl,
-    destination:            argv.acsUrl,
-    acsUrl:                 argv.acsUrl,
-    sloUrl:                 argv.sloUrl,
-    RelayState:             argv.relayState,
-    allowRequestAcsUrl:     !argv.disableRequestAcsUrl,
-    digestAlgorithm:        'sha256',
-    signatureAlgorithm:     'rsa-sha256',
-    signResponse:           argv.signResponse,
-    encryptAssertion:       argv.encryptAssertion,
-    encryptionCert:         argv.encryptionCert,
-    encryptionPublicKey:    argv.encryptionPublicKey,
-    encryptionAlgorithm:    'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
+    issuer: argv.issuer,
+    serviceProviderId: argv.serviceProviderId || argv.audience,
+    cert: argv.cert,
+    key: argv.key,
+    audience: argv.audience,
+    recipient: argv.acsUrl,
+    destination: argv.acsUrl,
+    acsUrl: argv.acsUrl,
+    sloUrl: argv.sloUrl,
+    RelayState: argv.relayState,
+    allowRequestAcsUrl: !argv.disableRequestAcsUrl,
+    digestAlgorithm: 'sha256',
+    signatureAlgorithm: 'rsa-sha256',
+    signResponse: argv.signResponse,
+    encryptAssertion: argv.encryptAssertion,
+    encryptionCert: argv.encryptionCert,
+    encryptionPublicKey: argv.encryptionPublicKey,
+    encryptionAlgorithm: 'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
     keyEncryptionAlgorithm: 'http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p',
-    lifetimeInSeconds:      3600,
-    authnContextClassRef:   argv.authnContextClassRef,
-    authnContextDecl:       argv.authnContextDecl,
+    lifetimeInSeconds: 3600,
+    authnContextClassRef: argv.authnContextClassRef,
+    authnContextDecl: argv.authnContextDecl,
     includeAttributeNameFormat: true,
-    profileMapper:          SimpleProfileMapper.fromMetadata(argv.config.metadata),
-    postEndpointPath:       IDP_PATHS.SSO,
-    redirectEndpointPath:   IDP_PATHS.SSO,
-    logoutEndpointPaths:    argv.sloUrl ?
-                            {
-                              redirect: IDP_PATHS.SLO,
-                              post: IDP_PATHS.SLO
-                            } : {},
-    getUserFromRequest:     function(req) { return req.user; },
-    getPostURL:             function (audience, authnRequestDom, req, callback) {
-                              return callback(null, (req.authnRequest && req.authnRequest.acsUrl) ?
-                                req.authnRequest.acsUrl :
-                                argv.acsUrl);
-                            },
-    transformAssertion:     function(assertionDom) {
-                              if (argv.authnContextDecl) {
-                                var declDoc;
-                                try {
-                                  declDoc = new Parser().parseFromString(argv.authnContextDecl);
-                                } catch(err){
-                                  console.log('Unable to parse Authentication Context Declaration XML', err);
-                                }
-                                if (declDoc) {
-                                  const authnContextDeclEl = assertionDom.createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:AuthnContextDecl');
-                                  authnContextDeclEl.appendChild(declDoc.documentElement);
-                                  const authnContextEl = assertionDom.getElementsByTagName('saml:AuthnContext')[0];
-                                  authnContextEl.appendChild(authnContextDeclEl);
-                                }
-                              }
-                            },
-    responseHandler:        function(response, opts, req, res, next) {
-                              console.log(dedent(chalk`
+    profileMapper: SimpleProfileMapper.fromMetadata(argv.config.metadata),
+    postEndpointPath: IDP_PATHS.SSO,
+    redirectEndpointPath: IDP_PATHS.SSO,
+    logoutEndpointPaths: argv.sloUrl ?
+      {
+        redirect: IDP_PATHS.SLO,
+        post: IDP_PATHS.SLO
+      } : {},
+    getUserFromRequest: function (req) { return req.user; },
+    getPostURL: function (audience, authnRequestDom, req, callback) {
+      return callback(null, (req.authnRequest && req.authnRequest.acsUrl) ?
+        req.authnRequest.acsUrl :
+        argv.acsUrl);
+    },
+    transformAssertion: function (assertionDom) {
+      if (argv.authnContextDecl) {
+        var declDoc;
+        try {
+          declDoc = new Parser().parseFromString(argv.authnContextDecl);
+        } catch (err) {
+          console.log('Unable to parse Authentication Context Declaration XML', err);
+        }
+        if (declDoc) {
+          const authnContextDeclEl = assertionDom.createElementNS('urn:oasis:names:tc:SAML:2.0:assertion', 'saml:AuthnContextDecl');
+          authnContextDeclEl.appendChild(declDoc.documentElement);
+          const authnContextEl = assertionDom.getElementsByTagName('saml:AuthnContext')[0];
+          authnContextEl.appendChild(authnContextDeclEl);
+        }
+      }
+    },
+    responseHandler: function (response, opts, req, res, next) {
+      console.log(dedent(chalk`
                                 Sending SAML Response to {cyan ${opts.postUrl}} =>
                                   {bold RelayState} =>
                                     {cyan ${opts.RelayState || UNDEFINED_VALUE}}
                                   {bold SAMLResponse} =>`
-                              ));
+      ));
 
-                              console.log(prettyPrintXml(response.toString(), 4));
+      console.log(prettyPrintXml(response.toString(), 4));
 
-                              res.render('samlresponse', {
-                                AcsUrl: opts.postUrl,
-                                SAMLResponse: response.toString('base64'),
-                                RelayState: opts.RelayState
-                              });
-                            }
+      res.render('samlresponse', {
+        AcsUrl: opts.postUrl,
+        SAMLResponse: response.toString('base64'),
+        RelayState: opts.RelayState
+      });
+    }
   }
 
   /**
@@ -484,7 +483,7 @@ function _runServer(argv) {
   app.engine('handlebars', hbs.__express);
 
   // Register Helpers
-  hbs.registerHelper('extend', function(name, context) {
+  hbs.registerHelper('extend', function (name, context) {
     var block = blocks[name];
     if (!block) {
       block = blocks[name] = [];
@@ -493,7 +492,7 @@ function _runServer(argv) {
     block.push(context.fn(this));
   });
 
-  hbs.registerHelper('block', function(name) {
+  hbs.registerHelper('block', function (name) {
     const val = (blocks[name] || []).join('\n');
     // clear the block
     blocks[name] = [];
@@ -501,16 +500,16 @@ function _runServer(argv) {
   });
 
 
-  hbs.registerHelper('select', function(selected, options) {
+  hbs.registerHelper('select', function (selected, options) {
     return options.fn(this).replace(
       new RegExp(' value=\"' + selected + '\"'), '$& selected="selected"');
   });
 
-  hbs.registerHelper('getProperty', function(attribute, context) {
+  hbs.registerHelper('getProperty', function (attribute, context) {
     return context[attribute];
   });
 
-  hbs.registerHelper('serialize', function(context) {
+  hbs.registerHelper('serialize', function (context) {
     return new Buffer(JSON.stringify(context)).toString('base64');
   });
 
@@ -519,12 +518,11 @@ function _runServer(argv) {
    */
 
   app.use(logger(':date> :method :url - {:referrer} => :status (:response-time ms)', {
-    skip: function (req, res)
-      {
-        return req.path.startsWith('/bower_components') || req.path.startsWith('/css')
-      }
+    skip: function (req, res) {
+      return req.path.startsWith('/bower_components') || req.path.startsWith('/css')
+    }
   }));
-  app.use(bodyParser.urlencoded({extended: true}));
+  app.use(bodyParser.urlencoded({ extended: true }));
   app.use(express.static(path.join(__dirname, 'public')));
   app.use(session({
     secret: 'The universe works on a math equation that never even ever really ends in the end',
@@ -538,23 +536,27 @@ function _runServer(argv) {
    * View Handlers
    */
 
+
   const showUser = function (req, res, next) {
+
     res.render('user', {
       user: req.user,
       participant: req.participant,
       metadata: req.metadata,
       authnRequest: req.authnRequest,
       idp: req.idp.options,
-      paths: IDP_PATHS
+      paths: IDP_PATHS,
+      users: req.users
     });
+
   }
 
   /**
    * Shared Handlers
    */
 
-  const parseSamlRequest = function(req, res, next) {
-    samlp.parseRequest(req, function(err, data) {
+  const parseSamlRequest = function (req, res, next) {
+    samlp.parseRequest(req, function (err, data) {
       if (err) {
         return res.render('error', {
           message: 'SAML AuthnRequest Parse Error: ' + err.message,
@@ -576,13 +578,13 @@ function _runServer(argv) {
     })
   };
 
-  const getSessionIndex = function(req) {
+  const getSessionIndex = function (req) {
     if (req && req.session) {
       return Math.abs(getHashCode(req.session.id)).toString();
     }
   }
 
-  const getParticipant = function(req) {
+  const getParticipant = function (req) {
     return {
       serviceProviderId: req.idp.options.serviceProviderId,
       sessionIndex: getSessionIndex(req),
@@ -592,7 +594,7 @@ function _runServer(argv) {
     }
   }
 
-  const parseLogoutRequest = function(req, res, next) {
+  const parseLogoutRequest = function (req, res, next) {
     if (!req.idp.options.sloUrl) {
       return res.render('error', {
         message: 'SAML Single Logout Service URL not defined for Service Provider'
@@ -602,16 +604,16 @@ function _runServer(argv) {
     console.log('Processing SAML SLO request for participant => \n', req.participant);
 
     return samlp.logout({
-      issuer:                 req.idp.options.issuer,
-      cert:                   req.idp.options.cert,
-      key:                    req.idp.options.key,
-      digestAlgorithm:        req.idp.options.digestAlgorithm,
-      signatureAlgorithm:     req.idp.options.signatureAlgorithm,
-      sessionParticipants:    new SessionParticipants(
-      [
-        req.participant
-      ]),
-      clearIdPSession: function(callback) {
+      issuer: req.idp.options.issuer,
+      cert: req.idp.options.cert,
+      key: req.idp.options.key,
+      digestAlgorithm: req.idp.options.digestAlgorithm,
+      signatureAlgorithm: req.idp.options.signatureAlgorithm,
+      sessionParticipants: new SessionParticipants(
+        [
+          req.participant
+        ]),
+      clearIdPSession: function (callback) {
         console.log('Destroying session ' + req.session.id + ' for participant', req.participant);
         req.session.destroy();
         callback();
@@ -623,9 +625,9 @@ function _runServer(argv) {
    * Routes
    */
 
-  app.use(function(req, res, next){
+  app.use(function (req, res, next) {
     if (argv.rollSession) {
-      req.session.regenerate(function(err) {
+      req.session.regenerate(function (err) {
         return next();
       });
     } else {
@@ -633,12 +635,36 @@ function _runServer(argv) {
     }
   });
 
-  app.use(function(req, res, next){
-    req.user = argv.config.user;
-    req.metadata = argv.config.metadata;
-    req.idp = { options: idpOptions };
-    req.participant = getParticipant(req);
-    next();
+
+  app.use(function (req, res, next) {
+
+    argv.config.users.then((users) => {
+      req.session.allUsers = users;
+      if (req.session.search) {
+        req.users = users.filter((usr) => {
+          if (!usr.irisMailMainAddress) return false;
+          return usr.irisMailMainAddress.startsWith(req.session.search);
+        });
+      } else {
+        req.users = [];
+      }
+      console.log(req.session.eduPersonPrincipalName);
+      if (req.session.eduPersonPrincipalName) {
+        // Find ...
+        req.user = users.find(function (el) {
+          return el.eduPersonPrincipalName === req.session.eduPersonPrincipalName;
+        });
+      } else {
+        req.user = users[0];
+      }
+      console.log(req.user);
+      req.metadata = argv.config.metadata;
+      req.idp = { options: idpOptions };
+      req.participant = getParticipant(req);
+      next();
+    });
+
+
   });
 
   app.get(['/', '/idp', IDP_PATHS.SSO], parseSamlRequest);
@@ -647,9 +673,9 @@ function _runServer(argv) {
   app.get(IDP_PATHS.SLO, parseLogoutRequest);
   app.post(IDP_PATHS.SLO, parseLogoutRequest);
 
-  app.post(IDP_PATHS.SIGN_IN, function(req, res) {
+  app.post(IDP_PATHS.SIGN_IN, function (req, res) {
     const authOptions = extend({}, req.idp.options);
-    Object.keys(req.body).forEach(function(key) {
+    Object.keys(req.body).forEach(function (key) {
       var buffer;
       if (key === '_authnRequest') {
         buffer = new Buffer(req.body[key], 'base64');
@@ -684,19 +710,37 @@ function _runServer(argv) {
       Generating SAML Response using =>
         {bold User} => ${Object.entries(req.user).map(([key, value]) => chalk`
           ${key}: {cyan ${value}}`
-        ).join('')}
+    ).join('')}
         {bold SAMLP Options} => ${Object.entries(authOptions).map(([key, value]) => chalk`
           ${key}: {cyan ${formatOptionValue(key, value)}}`
-        ).join('')}
+    ).join('')}
     `));
     samlp.auth(authOptions)(req, res);
   })
 
-  app.get(IDP_PATHS.METADATA, function(req, res, next) {
+  app.post('/select-user/:eduPersonPrincipalName', function (req, res, next) {
+    console.log('/select-user ' + req.params.eduPersonPrincipalName);
+    req.session.eduPersonPrincipalName = req.params.eduPersonPrincipalName;
+    req.session.search = null;
+    req.session.save();
+    console.log(req.session.eduPersonPrincipalName);
+    res.status(200).end();
+  });
+
+  app.post('/search', function (req, res, next) {
+    console.log('==========>');
+    console.log(req.body);
+    const search = req.body.search;
+    req.session.search = search;
+    console.log('=========> /search ' + search);
+    res.status(200).end();
+  });
+
+  app.get(IDP_PATHS.METADATA, function (req, res, next) {
     samlp.metadata(req.idp.options)(req, res);
   });
 
-  app.post(IDP_PATHS.METADATA, function(req, res, next) {
+  app.post(IDP_PATHS.METADATA, function (req, res, next) {
     if (req.body && req.body.attributeName && req.body.displayName) {
       var attributeExists = false;
       const attribute = {
@@ -707,7 +751,7 @@ function _runServer(argv) {
         multiValue: req.body.valueType === 'multi'
       };
 
-      req.metadata.forEach(function(entry) {
+      req.metadata.forEach(function (entry) {
         if (entry.id === req.body.attributeName) {
           entry = attribute;
           attributeExists = true;
@@ -722,14 +766,14 @@ function _runServer(argv) {
     }
   });
 
-  app.get(IDP_PATHS.SIGN_OUT, function(req, res, next) {
+  app.get(IDP_PATHS.SIGN_OUT, function (req, res, next) {
     if (req.idp.options.sloUrl) {
       console.log('Initiating SAML SLO request for user: ' + req.user.userName +
-      ' with sessionIndex: ' + getSessionIndex(req));
+        ' with sessionIndex: ' + getSessionIndex(req));
       res.redirect(IDP_PATHS.SLO);
     } else {
       console.log('SAML SLO is not enabled for SP, destroying IDP session');
-      req.session.destroy(function(err) {
+      req.session.destroy(function (err) {
         if (err) {
           throw err;
         }
@@ -738,15 +782,15 @@ function _runServer(argv) {
     }
   });
 
-  app.get([IDP_PATHS.SETTINGS], function(req, res, next) {
+  app.get([IDP_PATHS.SETTINGS], function (req, res, next) {
     res.render('settings', {
       idp: req.idp.options
     });
   });
 
-  app.post([IDP_PATHS.SETTINGS], function(req, res, next) {
-    Object.keys(req.body).forEach(function(key) {
-      switch(req.body[key].toLowerCase()){
+  app.post([IDP_PATHS.SETTINGS], function (req, res, next) {
+    Object.keys(req.body).forEach(function (key) {
+      switch (req.body[key].toLowerCase()) {
         case "true": case "yes": case "1":
           req.idp.options[key] = true;
           break;
@@ -768,19 +812,19 @@ function _runServer(argv) {
   });
 
   // catch 404 and forward to error handler
-  app.use(function(req, res, next) {
+  app.use(function (req, res, next) {
     const err = new Error('Route Not Found');
     err.status = 404;
     next(err);
   });
 
   // development error handler
-  app.use(function(err, req, res, next) {
+  app.use(function (err, req, res, next) {
     if (err) {
       res.status(err.status || 500);
       res.render('error', {
-          message: err.message,
-          error: err
+        message: err.message,
+        error: err
       });
     }
   });
@@ -791,11 +835,11 @@ function _runServer(argv) {
 
   console.log(chalk`Starting IdP server on port {cyan ${app.get('host')}:${app.get('port')}}...\n`);
 
-  httpServer.listen(app.get('port'), app.get('host'), function() {
-    const scheme          = argv.https ? 'https' : 'http',
-          {address, port} = httpServer.address(),
-          hostname        = WILDCARD_ADDRESSES.includes(address) ? os.hostname() : 'localhost',
-          baseUrl         = `${scheme}://${hostname}:${port}`;
+  httpServer.listen(app.get('port'), app.get('host'), function () {
+    const scheme = argv.https ? 'https' : 'http',
+      { address, port } = httpServer.address(),
+      hostname = WILDCARD_ADDRESSES.includes(address) ? os.hostname() : 'localhost',
+      baseUrl = `${scheme}://${hostname}:${port}`;
 
     console.log(dedent(chalk`
       IdP Metadata URL:
@@ -824,7 +868,7 @@ function runServer(options) {
   return _runServer(args.argv);
 }
 
-function main () {
+function main() {
   const args = processArgs(process.argv.slice(2));
   _runServer(args.argv);
 }

@@ -130,8 +130,8 @@ function formatOptionValue(key, value) {
   }
   if (CERT_OPTIONS.includes(key)) {
     return chalk`${value.toString()
-        .replace(/-----.+?-----|\n/g, '')
-        .substring(0, 80)
+      .replace(/-----.+?-----|\n/g, '')
+      .substring(0, 80)
       }{white …}`;
   }
   if (!value && value !== false) {
@@ -602,23 +602,31 @@ function _runServer(argv) {
     };
 
     console.log('Processing SAML SLO request for participant => \n', req.participant);
+    console.log('Destroying session ' + req.session.id + ' for participant', req.participant);
+    req.session.destroy();
+    // callback();
 
-    return samlp.logout({
-      issuer: req.idp.options.issuer,
-      cert: req.idp.options.cert,
-      key: req.idp.options.key,
-      digestAlgorithm: req.idp.options.digestAlgorithm,
-      signatureAlgorithm: req.idp.options.signatureAlgorithm,
-      sessionParticipants: new SessionParticipants(
-        [
-          req.participant
-        ]),
-      clearIdPSession: function (callback) {
-        console.log('Destroying session ' + req.session.id + ' for participant', req.participant);
-        req.session.destroy();
-        callback();
-      }
-    })(req, res, next);
+    return ((req, res, next) => {
+      res.status(200).redirect(req.idp.options.sloUrl)
+      next();
+    })(req, res, next)
+
+    // return samlp.logout({
+    //   issuer: req.idp.options.issuer,
+    //   cert: req.idp.options.cert,
+    //   key: req.idp.options.key,
+    //   digestAlgorithm: req.idp.options.digestAlgorithm,
+    //   signatureAlgorithm: req.idp.options.signatureAlgorithm,
+    //   sessionParticipants: new SessionParticipants(
+    //     [
+    //       req.participant
+    //     ]),
+    //   clearIdPSession: function (callback) {
+    //     console.log('Destroying session ' + req.session.id + ' for participant', req.participant);
+    //     req.session.destroy();
+    //     callback();
+    //   }
+    // })(req, res, next);
   }
 
   /**
@@ -642,8 +650,8 @@ function _runServer(argv) {
       req.session.allUsers = users;
       if (req.session.search) {
         req.users = users.filter((usr) => {
-          if (!usr.irisMailMainAddress) return false;
-          return usr.irisMailMainAddress.startsWith(req.session.search);
+          if (!usr.mail) return false;
+          return usr.mail.startsWith(req.session.search);
         });
       } else {
         req.users = [];

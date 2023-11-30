@@ -19,7 +19,7 @@ let users = new Promise((resolve, reject) => {
           sn: doc.lastName,
           schacPersonalUniqueID: doc.idNum,
           eduPersonPrincipalName: doc.uid,
-          irisMailMainAddress: doc.email.address
+          mail: doc.email.address
         }
       }));
       client.close();
@@ -30,15 +30,6 @@ let users = new Promise((resolve, reject) => {
 /**
  * User Profile
  */
-// let profile = {
-//   userName: 'daniel.ruiz@alu.uma.es',
-//   nameIdFormat: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
-//   givenName: 'Daniel',
-//   sn: 'Ruiz',
-//   schacPersonalUniqueID: '75893408D',
-//   eduPersonPrincipalName: '061123123X',
-//   irisMailMainAddress: 'daniel.ruiz@alu.uma.es'
-// }
 
 /**
  * SAML Attribute Metadata
@@ -68,7 +59,7 @@ let metadata = [{
   description: 'El identificador único de la UMA',
   multiValue: false
 }, {
-  id: "irisMailMainAddress",
+  id: "mail",
   optional: false,
   displayName: 'Email',
   description: 'Email del usuario',

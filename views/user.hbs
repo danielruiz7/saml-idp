@@ -6,13 +6,19 @@
       <h3 class="panel-title">Buscar usuario...</h3>
     </div>
     <div class="panel-body">
-      <form class="form-horizontal" role="form" id="searchForm">
-        <input id="searchInput" class="form-control" placeholder="Buscar por correo electrónico" />
-        <button class="btn btn-primary" type="submit">Buscar</button>
+      <form class="form-horizontal"
+        role="form"
+        id="searchForm">
+        <input id="searchInput"
+          class="form-control"
+          placeholder="Buscar por correo electrónico" />
+        <button class="btn btn-primary"
+          type="submit">Buscar</button>
         <ul class="list-group">
           {{#each users}}
           <li class="list-group-item"
-            onclick="selectUser('{{eduPersonPrincipalName}}')">{{eduPersonPrincipalName}} - {{irisMailMainAddress}} - {{givenName}} {{sn}}</li>
+            onclick="selectUser('{{eduPersonPrincipalName}}')">{{eduPersonPrincipalName}} - {{mail}} - {{givenName}}
+            {{sn}}</li>
           {{/each}}
         </ul>
       </form>
@@ -21,7 +27,8 @@
   </div>
 </div>
 
-<div class="col-md-8 col-md-offset-2" style="display: none;">
+<div class="col-md-8 col-md-offset-2"
+  style="display: none;">
   <div class="panel panel-primary">
     <div class="panel-heading">
       <a aria-controls="collapse-authn-request"
@@ -261,10 +268,12 @@
           </div>
           <div class="form-group">
             <div class="col-md-12 text-right">
-              <button id="btn-show-attribute-modal" style="visibility: hidden;"
+              <button id="btn-show-attribute-modal"
+                style="visibility: hidden;"
                 class="btn btn-default input-xlarge"><i class="fa fa-plus-circle"><span>Add
                     attribute</span></i></button>
-              <button id="btn-sign-out" style="visibility: hidden;"
+              <button id="btn-sign-out"
+                style="visibility: hidden;"
                 class="btn btn-default input-xlarge"><i class="fa fa-sign-out"><span>Sign out</span></i></button>
               <button id="btn-sign-in"
                 class="btn btn-primary input-xlarge"
@@ -397,18 +406,18 @@
       }
     })
 
-    $('#searchForm').submit(function(e) {
+    $('#searchForm').submit(function (e) {
       e.preventDefault();
       $.ajax({
-          type: "POST",
-          url: '/search',
-          data: { search: $("#searchInput").val() },
-          success: function () {
-            window.location.reload();
-          }, error: function (xhr, textStatus, errorMessage) {
-            console.log(errorMessage);
-          }
-        });
+        type: "POST",
+        url: '/search',
+        data: { search: $("#searchInput").val() },
+        success: function () {
+          window.location.reload();
+        }, error: function (xhr, textStatus, errorMessage) {
+          console.log(errorMessage);
+        }
+      });
     })
 
     $('a[data-toggle=collapse]').click(function () {
